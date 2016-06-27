@@ -55,7 +55,7 @@ class pyscope :
     
         if not found:
             raise Exception('No suitable video driver found!')
-        
+
         size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
         #print "Framebuffer size: %d x %d" % (size[0], size[1])
         self.screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
@@ -63,18 +63,18 @@ class pyscope :
         #Mouse Visablilty
         pygame.mouse.set_visible(0)
 
-     
         self.screen.fill((0, 0, 0))        
         # Initialise font support
         pygame.font.init()
-        
-    pygame.mouse.set_visible(0)
-    # Render the screen
+
+        pygame.mouse.set_visible(0)
+        # Render the screen
         pygame.display.update()
  
+
     def __del__(self):
         "Destructor to make sure pygame shuts down, etc."
- 
+
     def test(self):
         # Fill the screen with red (255, 0, 0)
         red = (255, 0, 0)
@@ -83,18 +83,17 @@ class pyscope :
         pygame.display.update()
 
     def CapturePreview(self):
-    
-    CapturePic = pygame.image.load('/home/pi/Pictures/foo.jpg')
-    #Make Picture fit full screen while keeping ration
-    RatioWidth  = pygame.display.Info().current_h * (float(4)/float(3))
-    CapturePic = pygame.transform.scale(CapturePic, (int(RatioWidth), pygame.display.Info().current_h)) 
-    #Work out center of picture and work out center of displa   
-    CapturePic_rect = CapturePic.get_rect(center = self.screen.get_rect().center)
-    self.screen.blit(CapturePic, (CapturePic_rect))
-    #Update display for 2 seconds
-    pygame.display.update()
-    time.sleep(2)
- 
+        CapturePic = pygame.image.load('/home/pi/Pictures/foo.jpg')
+        #Make Picture fit full screen while keeping ration
+        RatioWidth  = pygame.display.Info().current_h * (float(4)/float(3))
+        CapturePic = pygame.transform.scale(CapturePic, (int(RatioWidth), pygame.display.Info().current_h)) 
+        #Work out center of picture and work out center of displa   
+        CapturePic_rect = CapturePic.get_rect(center = self.screen.get_rect().center)
+        self.screen.blit(CapturePic, (CapturePic_rect))
+        #Update display for 2 seconds
+        pygame.display.update()
+        time.sleep(2)
+     
 # Create an instance of the PyScope class
 
 scope = pyscope()
