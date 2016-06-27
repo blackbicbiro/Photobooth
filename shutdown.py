@@ -13,7 +13,7 @@ def shutdown_callback(channel):
 	os.system("sudo shutdown -h now")
 
 
-GPIO.add_event_detect(shutdown_button, GPIO.FALLING, callback = Shutdown_callback, bouncetime = 2000)  
+GPIO.add_event_detect(shutdown_button, GPIO.FALLING, callback = shutdown_callback, bouncetime = 2000)  
 
 
 
