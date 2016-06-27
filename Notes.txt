@@ -1,3 +1,22 @@
+ToDO:
+PiCam:
+Countdown (using LEDs or ON screen)
+real time clock
+NTP
+auto mount usb on boot
+Button press to tranfer images to new mounted USB
+Button press shutdown script
+Button press for Captures
+Button MULT Button press to delete OR long press
+
+
+
+PiDisplay:
+Slideshow FBI or PYGAME
+
+
+#########################
+
 PiCam:
 	NTP Server
 	PiCamera

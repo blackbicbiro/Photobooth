@@ -105,7 +105,7 @@ time.sleep(.1)
 #sef CapturePicture(channel):
 def CapturePicture(Capture_Button):
     print("got here")
-        camera.capture('/home/pi/Pictures/foo.jpg')
+    camera.capture('/home/pi/Pictures/foo.jpg')
     camera.stop_preview()
     scope.CapturePreview()
     camera.start_preview()
