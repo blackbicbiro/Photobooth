@@ -7,18 +7,22 @@ import time
 import random
 import picamera
 import RPi.GPIO as GPIO
+import glob
 
 #Saved File Directory
 File_Directory = "/home/pi/Pictures/"
 
 #GPIO Setup
-Capture_Button = 3
-Exit_Button = 5
-Shutdown_Button = 7
+Capture_Button = 3       #capture picture
+Exit_Button = 4          #exit python
+#Shutdown_Button = 7     #used by shutdown.py script
+Delete_Pic_Button = 14    #delete pictures from sd card
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(Capture_Button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
+GPIO.setup(Exit_Button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(Delete_Pic_Button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+#GPIO.setup(Shutdown_Button, GPIO.IN, pull_up_down=GPIO.PUD_UP)         #used by shutown.py script
 
 #Camera setup
 camera = picamera.PiCamera()
@@ -27,8 +31,6 @@ camera.framerate = 15               ## look at this does this improve video crop
 camera.annotate_text_size = 160
 
 
-
- 
 class pyscope :
     screen = None;
     
@@ -39,7 +41,7 @@ class pyscope :
         disp_no = os.getenv("DISPLAY")
         if disp_no:
             print "I'm running under X display = {0}".format(disp_no)
-        
+
         # Check which frame buffer drivers are available
         # Start with fbcon since directfb hangs with composite output
         drivers = ['fbcon', 'directfb', 'svgalib']
@@ -85,28 +87,25 @@ class pyscope :
         # Update the display
         pygame.display.update()
 
-    def CapturePreview(self, File_Name):
-        black = (0, 0, 0)
-        CapturePic = pygame.image.load(File_Directory + File_Name)
-        #Make Picture fit full screen while keeping ration
-        RatioWidth  = pygame.display.Info().current_h * (float(4)/float(3))
-        CapturePic = pygame.transform.scale(CapturePic, (int(RatioWidth), pygame.display.Info().current_h)) 
-        #Work out center of picture and work out center of displa   
-        CapturePic_rect = CapturePic.get_rect(center = self.screen.get_rect().center)
-        self.screen.blit(CapturePic, (CapturePic_rect))
-        #Update display for 2 seconds
-        pygame.display.update()
-        time.sleep(2)
-        self.screen.fill(black)
-        pygame.display.update()
 
 
 
-     
-# Create an instance of the PyScope class
-scope = pyscope()
 
 
+def CapturePreview(File_Name):
+    black = (0, 0, 0)
+    CapturePic = pygame.image.load(File_Directory + File_Name)
+    #Make Picture fit full screen while keeping ration
+    RatioWidth  = pygame.display.Info().current_h * (float(4)/float(3))
+    CapturePic = pygame.transform.scale(CapturePic, (int(RatioWidth), pygame.display.Info().current_h)) 
+    #Work out center of picture and work out center of displa   
+    CapturePic_rect = CapturePic.get_rect(center = scope.screen.get_rect().center)
+    scope.screen.blit(CapturePic, (CapturePic_rect))
+    #Update display for 2 seconds
+    pygame.display.update()
+    time.sleep(2)
+    scope.screen.fill(black)
+    pygame.display.update()
 
 
 
@@ -132,11 +131,63 @@ def Create_Capture_Name():
 
 
 
-def CapturePicture(Capture_Button):
+def CapturePicture():
     File_Name = Create_Capture_Name()
     camera.capture(File_Directory + File_Name)
     camera.stop_preview()
-    scope.CapturePreview(File_Name)
+    CapturePreview(File_Name)
+    camera.start_preview()
+
+
+
+
+
+def DeletingPicture():
+    camera.stop_preview()
+    font = pygame.font.Font(None, 36)
+    black = (0, 0, 0)
+    #clear sceren for next message
+    scope.screen.fill((0, 0, 0))
+    pygame.display.update()
+       
+    start_time = time.time()
+    #finish_time = time.time()
+    text = font.render("To delete all pictures hold delete button for 5 seconds", True, (255, 255, 255))
+    scope.screen.blit(text,(10,10))
+    pygame.display.update()
+    time.sleep(2)
+
+    while GPIO.input(Delete_Pic_Button) == GPIO.LOW:
+        time.sleep(0.02)    # stop loop using 100% cpu
+        finish_time = time.time()
+        total_time = finish_time - start_time
+        #check if button has been held for long enough
+        if (total_time > 5):
+            #clear sceren for next message
+            scope.screen.fill((0, 0, 0))
+            pygame.display.update()
+
+            text = font.render("Deleting Pictures", True, (255, 255, 255))
+            scope.screen.blit(text,(10,10))
+            pygame.display.update()
+            #delete files
+            files = glob.glob(File_Directory + '*')
+            for f in files:
+                os.remove(f)
+            time.sleep(2)
+            #clear scrren for next message
+            scope.screen.fill((0, 0, 0))
+            pygame.display.update()
+            text = font.render("ALL PICTURES HAVE BEEN REMOVED", True, (255, 255, 255))
+            scope.screen.blit(text,(10 ,10))
+            pygame.display.update()
+            time.sleep(2)
+            print("pictures deleted")
+            break
+
+    #clear screen and start preview again
+    scope.screen.fill((0, 0, 0))
+    pygame.display.update()
     camera.start_preview()
 
 
@@ -144,21 +195,38 @@ def CapturePicture(Capture_Button):
 
 
 
+
+
+
+# Create an instance of the PyScope class
+scope = pyscope()
+
 #Start preview for the first time
 camera.start_preview()
-time.sleep(.1)
-    
-#Set up event capture for button
-GPIO.add_event_detect(Capture_Button, GPIO.RISING, callback=CapturePicture, bouncetime=200)
-
-
 
 #main loop
-a = 1
-while a is 1:
-    time.sleep(0.02)
-#    if GPIO.input(Capture_Button) == GPIO.LOW:
-#        CapturePicture()
+running = True
+while running is True:
+    time.sleep(0.02)    # stop loop using 100% cpu
+
+    # Check the buttons for a capture/exit/shutdown
+    if GPIO.input(Capture_Button) == GPIO.LOW:
+        CapturePicture()
+
+    if GPIO.input(Exit_Button) == GPIO.LOW:
+        print("Exit Triggered")
+        running=False
+
+    #delete pictures check
+    if GPIO.input(Delete_Pic_Button) == GPIO.LOW:
+         DeletingPicture()
+
+
+
+
+
+
+
 #    print("got here")
 
 
@@ -167,9 +235,9 @@ while a is 1:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:    # up key stops loop and exits
-                    a = 2
+                    running=False
     except KeyboardInterrupt:                   #not working!
-        a=2
+        running=False
 
 
 GPIO.cleanup()
@@ -177,4 +245,3 @@ camera.close()
 pygame.quit()
 
 
-        
