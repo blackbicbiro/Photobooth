@@ -60,8 +60,8 @@ class pyscope :
         #print "Framebuffer size: %d x %d" % (size[0], size[1])
         self.screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
 
-    #Mouse Visablilty
-    pygame.mouse.set_visible(0)
+        #Mouse Visablilty
+        pygame.mouse.set_visible(0)
 
      
         self.screen.fill((0, 0, 0))        
