@@ -92,22 +92,6 @@ class pyscope :
 
 
 
-def CapturePreview(File_Name):
-    black = (0, 0, 0)
-    CapturePic = pygame.image.load(File_Directory + File_Name)
-    #Make Picture fit full screen while keeping ration
-    RatioWidth  = pygame.display.Info().current_h * (float(4)/float(3))
-    CapturePic = pygame.transform.scale(CapturePic, (int(RatioWidth), pygame.display.Info().current_h)) 
-    #Work out center of picture and work out center of displa   
-    CapturePic_rect = CapturePic.get_rect(center = scope.screen.get_rect().center)
-    scope.screen.blit(CapturePic, (CapturePic_rect))
-    #Update display for 2 seconds
-    pygame.display.update()
-    time.sleep(2)
-    scope.screen.fill(black)
-    pygame.display.update()
-
-
 
 
 
@@ -131,12 +115,28 @@ def Create_Capture_Name():
 
 
 
-def CapturePicture():
-    File_Name = Create_Capture_Name()
-    camera.capture(File_Directory + File_Name)
-    camera.stop_preview()
-    CapturePreview(File_Name)
-    camera.start_preview()
+#Called to clear screen to black when needed
+def ClearScreen():
+    scope.screen.fill((0, 0, 0))
+    pygame.display.update()
+
+
+
+
+
+#Display Captured Picture. Scaled picture to fit screen properly
+def CapturePreview(File_Name):
+    CapturePic = pygame.image.load(File_Directory + File_Name)
+    #Make Picture fit full screen while keeping ration
+    RatioWidth  = pygame.display.Info().current_h * (float(4)/float(3))
+    CapturePic = pygame.transform.scale(CapturePic, (int(RatioWidth), pygame.display.Info().current_h)) 
+    #Work out center of picture and work out center of displa   
+    CapturePic_rect = CapturePic.get_rect(center = scope.screen.get_rect().center)
+    scope.screen.blit(CapturePic, (CapturePic_rect))
+    #Update display for 2 seconds
+    pygame.display.update()
+    time.sleep(2)
+    ClearScreen()
 
 
 
@@ -147,8 +147,7 @@ def DeletingPicture():
     font = pygame.font.Font(None, 36)
     black = (0, 0, 0)
     #clear sceren for next message
-    scope.screen.fill((0, 0, 0))
-    pygame.display.update()
+    ClearScreen()
        
     start_time = time.time()
     #finish_time = time.time()
@@ -164,8 +163,7 @@ def DeletingPicture():
         #check if button has been held for long enough
         if (total_time > 5):
             #clear sceren for next message
-            scope.screen.fill((0, 0, 0))
-            pygame.display.update()
+            ClearScreen()
 
             text = font.render("Deleting Pictures", True, (255, 255, 255))
             scope.screen.blit(text,(10,10))
@@ -176,8 +174,7 @@ def DeletingPicture():
                 os.remove(f)
             time.sleep(2)
             #clear scrren for next message
-            scope.screen.fill((0, 0, 0))
-            pygame.display.update()
+            ClearScreen()
             text = font.render("ALL PICTURES HAVE BEEN REMOVED", True, (255, 255, 255))
             scope.screen.blit(text,(10 ,10))
             pygame.display.update()
@@ -186,11 +183,19 @@ def DeletingPicture():
             break
 
     #clear screen and start preview again
-    scope.screen.fill((0, 0, 0))
-    pygame.display.update()
+    ClearScreen()
     camera.start_preview()
 
 
+
+
+
+def CapturePicture():
+    File_Name = Create_Capture_Name()
+    camera.capture(File_Directory + File_Name)
+    camera.stop_preview()
+    CapturePreview(File_Name)
+    camera.start_preview()
 
 
 
