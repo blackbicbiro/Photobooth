@@ -1,12 +1,15 @@
 import signal
 import sys
 import os
+import os.path
 import pygame
 import time
 import random
 import picamera
 import RPi.GPIO as GPIO
 
+#Saved File Directory
+File_Directory = "/home/pi/Pictures/"
 
 #GPIO Setup
 Capture_Button = 3
@@ -82,8 +85,9 @@ class pyscope :
         # Update the display
         pygame.display.update()
 
-    def CapturePreview(self):
-        CapturePic = pygame.image.load('/home/pi/Pictures/foo.jpg')
+    def CapturePreview(self, File_Name):
+        black = (0, 0, 0)
+        CapturePic = pygame.image.load(File_Directory + File_Name)
         #Make Picture fit full screen while keeping ration
         RatioWidth  = pygame.display.Info().current_h * (float(4)/float(3))
         CapturePic = pygame.transform.scale(CapturePic, (int(RatioWidth), pygame.display.Info().current_h)) 
@@ -93,36 +97,69 @@ class pyscope :
         #Update display for 2 seconds
         pygame.display.update()
         time.sleep(2)
+        self.screen.fill(black)
+        pygame.display.update()
+
+
+
      
 # Create an instance of the PyScope class
-
 scope = pyscope()
 
+
+
+
+
+
+
+#Create capture name. make sure doesnt overwrite ( could be caused by Rasbery pi clock being wrong if powered down)    
+def Create_Capture_Name():
+    now = time.strftime("%d-%m-%Y-%H:%M:%S") #get the current date and time for the start of the filename
+    capture_name = now
+    file_count = 0
+    capture_name_temp = capture_name
+    if os.path.exists(File_Directory + capture_name_temp + '.jpg'):
+        while os.path.exists(File_Directory + capture_name_temp + '.jpg'):
+            capture_name_temp = capture_name + "(" + str(file_count) + ")"
+            file_count = file_count+1   
+        capture_name = capture_name_temp + '.jpg'
+    else:
+        capture_name = capture_name + '.jpg'
+
+    return capture_name
+
+
+
+
+
+def CapturePicture(Capture_Button):
+    File_Name = Create_Capture_Name()
+    camera.capture(File_Directory + File_Name)
+    camera.stop_preview()
+    scope.CapturePreview(File_Name)
+    camera.start_preview()
+
+
+
+
+
+
+#Start preview for the first time
 camera.start_preview()
 time.sleep(.1)
     
-#sef CapturePicture(channel):
-def CapturePicture(Capture_Button):
-    print("got here")
-    camera.capture('/home/pi/Pictures/foo.jpg')
-    camera.stop_preview()
-    scope.CapturePreview()
-    camera.start_preview()
-    
-
-
-
-
-#Fod detching button press over and over
+#Set up event capture for button
 GPIO.add_event_detect(Capture_Button, GPIO.RISING, callback=CapturePicture, bouncetime=200)
 
 
+
+#main loop
 a = 1
 while a is 1:
     time.sleep(0.02)
 #    if GPIO.input(Capture_Button) == GPIO.LOW:
 #        CapturePicture()
-#   print("got here")
+#    print("got here")
 
 
 #Keyboard interupt 
