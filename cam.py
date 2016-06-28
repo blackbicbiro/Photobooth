@@ -13,10 +13,10 @@ import glob
 File_Directory = "/home/pi/Pictures/"
 
 #GPIO Setup
-Capture_Button = 3       #capture picture
-Exit_Button = 4          #exit python
-#Shutdown_Button = 7     #used by shutdown.py script
-Delete_Pic_Button = 14    #delete pictures from sd card
+Capture_Button = 23       #capture picture
+Delete_Pic_Button = 25    #delete pictures from sd card
+Exit_Button = 24        #exit python
+#Shutdown_Button = 4     #used by shutdown.py script
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(Capture_Button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
