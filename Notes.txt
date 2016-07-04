@@ -6,8 +6,8 @@ NTP
 auto mount usb on boot
 Button press to tranfer images to new mounted USB
 Button press shutdown script
-Button press for Captures
-Button MULT Button press to delete OR long press
+Button press for Captures									- working
+Button MULT Button press to delete OR long pressed 			- working with 5 second press with onscreen display
 
 
 

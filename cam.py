@@ -31,6 +31,11 @@ camera.framerate = 15               ## look at this does this improve video crop
 camera.annotate_text_size = 160
 
 
+#colours
+black = (0, 0, 0)
+white = (255, 255, 255)
+
+
 class pyscope :
     screen = None;
     
@@ -68,7 +73,7 @@ class pyscope :
         #Mouse Visablilty
         pygame.mouse.set_visible(0)
 
-        self.screen.fill((0, 0, 0))        
+        self.screen.fill(black)        
         # Initialise font support
         pygame.font.init()
 
@@ -187,15 +192,42 @@ def DeletingPicture():
     camera.start_preview()
 
 
-
-
-
 def CapturePicture():
     File_Name = Create_Capture_Name()
-    camera.capture(File_Directory + File_Name)
+    camera.preview_alpha = 128 #Opacity of the preview image.
+    font = pygame.font.Font(None, (int(scope.screen.get_rect().height/1.5)))
+
+    #dispay SMILE on screen    
+    text = font.render("SMILE", 1, (white))
+    textpos = text.get_rect()
+    textpos.centerx = scope.screen.get_rect().centerx
+    textpos.centery = scope.screen.get_rect().centery
+    scope.screen.blit(text, textpos)
+    pygame.display.flip()
+    time.sleep(1)
+
+
+    #countdown till picture is taken
+    for x in range (3,0,-1):
+            scope.screen.fill(black)
+            text = font.render(str(x), 1, white)
+            textpos = text.get_rect()
+            textpos.centerx = scope.screen.get_rect().centerx
+            textpos.centery = scope.screen.get_rect().centery
+            scope.screen.blit(text, textpos)
+            pygame.display.flip()
+            time.sleep(1)
     camera.stop_preview()
+    scope.screen.fill(white)
+    pygame.display.flip()
+    time.sleep(.2)
+    scope.screen.fill(black)
+    pygame.display.flip()
+    time.sleep(.2)    
+    camera.capture(File_Directory + File_Name)
     CapturePreview(File_Name)
     camera.start_preview()
+
 
 
 
