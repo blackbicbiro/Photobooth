@@ -16,6 +16,18 @@ File_Directory = "/home/pi/Pictures/"
 Capture_Button = 23       #capture picture
 Delete_Pic_Button = 25    #delete pictures from sd card
 Exit_Button = 24        #exit python
+# 7 seg display pins
+seg_pin_1 = 1
+seg_pin_2 = 2
+seg_pin_3 = 3
+seg_pin_4 = 4
+seg_pin_5 = 5
+seg_pin_6 = 6
+seg_pin_7 = 7
+seg_pin_8 = 8
+
+
+
 #Shutdown_Button = 4     #used by shutdown.py script
 
 GPIO.setmode(GPIO.BCM)
@@ -257,13 +269,6 @@ while running is True:
     #delete pictures check
     if GPIO.input(Delete_Pic_Button) == GPIO.LOW:
          DeletingPicture()
-
-
-
-
-
-
-
 #    print("got here")
 
 
@@ -273,6 +278,7 @@ while running is True:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:    # up key stops loop and exits
                     running=False
+
     except KeyboardInterrupt:                   #not working!
         running=False
 
