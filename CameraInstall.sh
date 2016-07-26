@@ -6,6 +6,7 @@ apt-get install python-pip -y
 apt-get install python-pygame -y
 apt-get install python-picamera -y
 apt-get install fbi -y
+apt-get install usbmount -y
 
 mkdir /home/pi/Pictures
 
