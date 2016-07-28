@@ -5,7 +5,7 @@ import time
 import os
 
 #set GPIO pins up
-shutdown_button = 3
+shutdown_button = 4
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(shutdown_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 

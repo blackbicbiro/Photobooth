@@ -9,8 +9,16 @@ import picamera
 import RPi.GPIO as GPIO
 import glob
 
+
+
 #Saved File Directory
-File_Directory = "/home/pi/Pictures/"
+File_Directory = "/home/pi/Pictures"
+
+#Check if direcotry exsists. if not make it.
+if (os.path.exists(File_Directory)) == False:
+    os.makedirs(File_Directory)
+
+
 
 #GPIO Setup
 Capture_Button = 23       #capture picture
@@ -230,13 +238,13 @@ def CapturePicture():
             pygame.display.flip()
             time.sleep(1)
     camera.stop_preview()
+    camera.capture(File_Directory + File_Name)
     scope.screen.fill(white)
     pygame.display.flip()
     time.sleep(.2)
     scope.screen.fill(black)
     pygame.display.flip()
-    time.sleep(.2)    
-    camera.capture(File_Directory + File_Name)
+    time.sleep(.2)
     CapturePreview(File_Name)
     camera.start_preview()
 
