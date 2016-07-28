@@ -1,5 +1,7 @@
 #!/bin/sh
 
+
+
 # install packages
 apt-get install update
 apt-get install python-pip -y
@@ -9,6 +11,7 @@ apt-get install fbi -y
 apt-get install usbmount -y
 
 mkdir /home/pi/Pictures
+
 
 
 

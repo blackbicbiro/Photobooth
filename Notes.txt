@@ -1,6 +1,9 @@
 ToDO:
 PiCam:
 Countdown (using LEDs or ON screen)
+screen going off
+	sudo nano /etc/lightdm/lightdm.conf
+	xserver-command=X -s 0 –dpms				#check this works
 real time clock
 NTP
 auto mount usb on boot
@@ -23,6 +26,8 @@ PiCam:
 	USBAuto mount and copy photos?
 	Multi Button Press to clear all PHOTOS (press all buttons?
 	wirless accespoint/DHCP server
+	rsync server
+
 	
 
 
