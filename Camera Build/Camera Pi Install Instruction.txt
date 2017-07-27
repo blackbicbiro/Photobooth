@@ -1,0 +1,107 @@
+1.Image rasbian lite to 4G sd card RASPBERRY PI 2
+
+2.Connect pi to internet and update repositrys
+	$sudo apt-get update
+
+3.Edit raspi-config settings
+	$sudo raspi-config
+		SSH			- Enabled
+		Camera			- Enabled
+		Set time zone		- London
+		Change host name	- Photobooth-Camera
+		Autologin to console 	- Enabled
+		User:			- pi
+		Passowrd:		- raspberry
+		Boot with network only	- Enable
+
+
+4.install requirests packages
+	$sudo apt-get install update
+	$sudo apt-get install python-pip -y
+	$sudo apt-get install python-pygame -y
+	$sudo apt-get install python-picamera -y
+	$sudo apt-get install nfs-common
+	$sudo apt-get install nfs-kernel-server
+	$sudo apt-get install dnsmasq -y		# DHCP server
+	$sudo apt-get install hostapd -y		#wirless AP
+
+
+5. Configure DHCP and WIFI
+	#Configure Wifi with static IP
+		$sudo nano /etc/dhcpcd.conf
+			#add to bottom of file
+
+			denyinterfaces wlan0  
+
+
+		$sudo nano /etc/network/interfaces
+			# Edit wifi for static address
+
+				allow-hotplug wlan0
+				iface wlan0 inet static
+				    address 192.168.1.1
+				    netmask 255.255.255.0
+				    network 192.168.1.0
+				    broadcast 192.168.1.255
+				#    wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+
+	# Restart dhcpcd
+		$sudo service dhcpcd restart
+		$sudo ifdown wlan0
+		$sudo ifup wlan0
+
+	# backup orignal file and edit new one
+		$sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig  
+		$sudo nano /etc/dnsmasq.conf
+			#add the following
+				interface=wlan0      # Use the require wireless interface - usually wlan0
+				  dhcp-range=192.168.1.2,192.168.1.20,255.255.255.0,24h
+
+
+
+
+
+
+
+
+
+
+
+
+6. Configure AP
+	#Create new blank config file
+		$sudo nano /etc/hostapd/hostapd.conf
+			#add the following
+				interface=wlan0
+				driver=nl80211
+				ssid=Photobooth   
+				hw_mode=g
+				channel=7
+				wmm_enabled=0
+				macaddr_acl=0
+				auth_algs=1
+				ignore_broadcast_ssid=0
+				wpa=2
+				wpa_passphrase=smileyface!
+				wpa_key_mgmt=WPA-PSK
+				wpa_pairwise=TKIP
+				rsn_pairwise=CCMP
+
+	#Set System where to find hostapd.conf file
+		$sudo nano /etc/default/hostapd
+			#Change following line
+				#DAEMON_CONF=""
+
+			#to
+				DAEMON_CONF="/etc/hostapd/hostapd.conf"
+
+7. Start dhcp and AP
+	$sudo service hostapd start  
+	$sudo service dnsmasq start 
+
+
+
+			
+
+
+

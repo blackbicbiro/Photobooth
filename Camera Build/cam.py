@@ -10,9 +10,19 @@ import RPi.GPIO as GPIO
 import glob
 
 
+defaultPicCheck = os.system("ls /home/pi/Pictures/Default.jpg")
+if defaultPicCheck != 0:
+        try:
+                os.system("cp /home/pi/Camera\ Build/Default.jpg /home/pi/Pictures/Default.jpg")
+                os.system("cp /home/pi/Camera\ Build/Default.jpg /home/pi/Pictures/Default1.jpg")
+
+                print("copying file")
+        except ValueError:
+                print("Oops!  That was no valid number.  Try again...")
+
 
 #Saved File Directory
-File_Directory = "/home/pi/Pictures"
+File_Directory = "/home/pi/Pictures/"
 
 #Check if direcotry exsists. if not make it.
 if (os.path.exists(File_Directory)) == False:
@@ -21,9 +31,14 @@ if (os.path.exists(File_Directory)) == False:
 
 
 #GPIO Setup
-Capture_Button = 23       #capture picture
-Delete_Pic_Button = 25    #delete pictures from sd card
-Exit_Button = 24        #exit python
+#Capture_Button = 23       #capture picture
+#Delete_Pic_Button = 25    #delete pictures from sd card
+#Exit_Button = 24        #exit python
+Capture_Button = 40       #capture picture
+Delete_Pic_Button = 38    #delete pictures from sd card
+Exit_Button = 36        #exit python
+USB_Button = 35
+
 # 7 seg display pins
 seg_pin_1 = 1
 seg_pin_2 = 2
@@ -36,17 +51,19 @@ seg_pin_8 = 8
 
 
 
-#Shutdown_Button = 4     #used by shutdown.py script
+#Shutdown_Button = 37     #used by shutdown.py script
 
-GPIO.setmode(GPIO.BCM)
+#GPIO.setmode(GPIO.BCM)
+GPIO.setmode(GPIO.BOARD)
 GPIO.setup(Capture_Button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(Exit_Button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(Delete_Pic_Button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(USB_Button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 #GPIO.setup(Shutdown_Button, GPIO.IN, pull_up_down=GPIO.PUD_UP)         #used by shutown.py script
 
 #Camera setup
 camera = picamera.PiCamera()
-camera.resolution = (2592, 1944)
+camera.resolution = (3280, 2464)
 camera.framerate = 15               ## look at this does this improve video cropping problem
 camera.annotate_text_size = 160
 
@@ -270,8 +287,16 @@ while running is True:
         CapturePicture()
 
     if GPIO.input(Exit_Button) == GPIO.LOW:
-        print("Exit Triggered")
-        running=False
+    	start_time = time.time()
+        while GPIO.input(Exit_Button) == GPIO.LOW:
+		time.sleep(0.02)    # stop loop using 100% cpu
+       		finish_time = time.time()
+        	total_time = finish_time - start_time
+        	#check if button has been held for long enough
+        	if (total_time > 5):
+			print("Exit Triggered")
+        		running=False
+			break
 
     #delete pictures check
     if GPIO.input(Delete_Pic_Button) == GPIO.LOW:

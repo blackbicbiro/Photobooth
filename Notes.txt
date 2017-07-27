@@ -1,9 +1,36 @@
 ToDO:
+
+Slide show:
+Rebuild SD card
+Install feh
+turn of screen sleep
+Setup NFS mount
+Auto Start feh
+ssh without password for shutdown   http://www.linuxproblem.org/art_9.html
+
+
+
 PiCam:
+Image to bigger SD card 64 gig?
+sort out smile text to fit screen
+ssh without password for shutdown   http://www.linuxproblem.org/art_9.html
+	
+
+
+
+
+
 Countdown (using LEDs or ON screen)
 screen going off
-	sudo nano /etc/lightdm/lightdm.conf
-	xserver-command=X -s 0 –dpms				#check this works
+							sudo nano /etc/kbd/config
+						Change these two lines.
+
+							# screen blanking timeout. monitor remains on, but the screen is cleared to
+							# range: 0-60 min (0==never) kernels I've looked at default to 10 minutes.
+							# (see linux/drivers/char/console.c)
+							BLANK_TIME=0 (Was 30)	
+
+
 real time clock
 NTP
 auto mount usb on boot
@@ -15,8 +42,14 @@ Button MULT Button press to delete OR long pressed 			- working with 5 second pr
 
 
 PiDisplay:
-Slideshow FBI or PYGAME
+Slide show using FEH!!!!
+/usr/bin/feh --quiet --recursive --randomize --fu--slideshow-delay 7  -R 10 /home/rob/Pictures/
 
+
+
+
+Wifi - Photobooth
+ pass	- smileyface!
 
 #########################
 

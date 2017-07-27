@@ -1,0 +1,143 @@
+1.Image rasbian lite to 4G sd card
+
+2.Connect pi to internet and update repositrys
+	$sudo apt-get update
+
+3.Edit raspi-config settings
+	$sudo raspi-config
+		SSH			- Enabled
+		Set time zone		- London
+		Change host name	- Photobooth-Slideshow
+		Autologin to console 	- Enabled
+		User:			- pi
+		Passowrd:		- raspberry
+		Boot with network only	- Enable
+		
+4. install screen
+	$sudo apt-get install screen
+
+5. install feh slideshow 
+	$sudo apt-get install feh
+
+6.Install X session	-	https://github.com/MichMich/MagicMirror/wiki/Jessie-Lite-Installation-Guide
+	$sudo apt-get install xinit xserver-xorg
+	$sudo apt-get install lxde-core
+	$sudo apt-get install lightdm
+	$sudo raspi-config
+		Autologin to gui	- Enable
+	$sudo apt-get install unclutter
+
+7. Add automount for files
+	#make directory
+		$mkdir /home/pi/Pictures
+		$mkdir /home/pi/Pictures/Photobooth
+	#edit /etc/fstab
+	#add to bottem of file
+		192.168.2.1:/home/pi/Pictures/ /home/pi/Pictures nfs defaults,timeo=14,soft 0 0
+
+
+8. scp files over
+	scp Slideshow build folder to slideshow pi
+		move default.jpg picture to Pictures folder
+		move slideshow.py to /home/pi/
+
+
+
+
+9. setup kiosk mode
+	#edit /home/pi/.config/lxsession/LXDE/autostart
+		#change
+			@lxpanel --profile LXDE
+			@pcmanfm --desktop --profile LXDE
+			@xscreensaver -no-splash
+		#to
+			@lxpanel --profile LXDE
+			@pcmanfm --desktop --profile LXDE	
+			#@xscreensaver -no-splash
+
+			@xset s off
+			@xset -dpms
+			@xset s noblank
+			
+			@/usr/bin/python /home/pi/slideshow.py
+
+
+
+
+
+
+
+12. Set static IP address for eth0
+	#edit /etc/dhcpcd.conf
+		#Add the following to the bottem of the file
+			#static address for pi
+			interface eth0
+			static ip_address=192.168.2.2/24
+			static routers=192.168.2.1
+			static domain_name_servers=192.168.2.1
+
+
+
+13.speed up ssh login
+	edit /etc/ssh/sshd_config
+		#add following to bottem of file
+	  		UseDNS no
+
+15. allow ssh shutdown
+	#run following
+		$sudo visudo
+			#Add this to bottem of file		
+				pi ALL = NOPASSWD: /sbin/shutdown
+				pi ALL = NOPASSWD: /home/pi/slideshow.py
+
+
+
+16 install autofs
+
+
+
+
+
+
+###check####
+4.Turn of screen blanking
+	$cat /sys/module/kernel/parameters/consoleblank		(check to see time out time)
+	$setterm -blank 0					(turn of blanking)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+192.168.2.1:/home/pi/Pictures on /home/pi/Pictures type nfs4 (rw,relatime,vers=4.0,rsize=131072,wsize=131072,namlen=255,hard,proto=tcp,port=0,timeo=600,retrans=2,sec=sys,clientaddr=192.168.2.2,local_lock=none,addr=192.168.2.1)
+
+/usr/bin/feh -l --quiet --recursive --randomize --full-screen --slideshow-delay 7 /home/pi/New
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+NFS sTUFF
+noauto,x-systemd.automount
