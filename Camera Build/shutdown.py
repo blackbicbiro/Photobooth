@@ -11,7 +11,7 @@ GPIO.setup(shutdown_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 def shutdown_callback(channel):
 	start_time = time.time()	
-    	while GPIO.input(Delete_Pic_Button) == GPIO.LOW:
+    	while GPIO.input(shutdown_button) == GPIO.LOW:
         	time.sleep(0.02)    # stop loop using 100% cpu
         	finish_time = time.time()
         	total_time = finish_time - start_time
